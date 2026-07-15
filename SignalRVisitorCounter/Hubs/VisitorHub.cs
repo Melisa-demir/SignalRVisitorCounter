@@ -8,8 +8,10 @@ namespace SignalRVisitorCounter.Hubs
         private static int _visitorCount = 0;
         public override async Task OnConnectedAsync()
         {
-            _visitorCount++;
-            await Clients.All.SendAsync("VisitorCountChanged", _visitorCount);
+            //_visitorCount++;
+            Console.WriteLine(Context.ConnectionId);
+
+            //await Clients.All.SendAsync("VisitorCountChanged", _visitorCount);
 
             await base.OnConnectedAsync();
         }
@@ -20,6 +22,15 @@ namespace SignalRVisitorCounter.Hubs
             await Clients.All.SendAsync("visitorCountChanged", _visitorCount);
 
             await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task IncreaseCounter()
+        {
+            _visitorCount++;
+
+            await Clients.All.SendAsync(
+                "VisitorCountChanged",
+                _visitorCount);
         }
     }
 }

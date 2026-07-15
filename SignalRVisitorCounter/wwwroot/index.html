@@ -2,38 +2,76 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Live Visitor Counter</title>
 </head>
+
 <body>
 
     <h1>Canlı Ziyaretçi Sayısı</h1>
 
     <h2 id="visitorCount">0</h2>
 
-    <p id="connectionStatus">Bağlantı kuruluyor...</p>
+    <button id="increaseButton">
+        +1 Artır
+    </button>
 
+    <p id="connectionStatus">
+        Bağlantı kuruluyor...
+    </p>
+
+    <!-- SignalR JavaScript kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 
     <script>
+        // SignalR Hub bağlantısını oluşturuyoruz.
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/visitorHub")
             .build();
 
+        // Server, VisitorCountChanged mesajını gönderdiğinde çalışır.
         connection.on("VisitorCountChanged", function (count) {
+
             document.getElementById("visitorCount").textContent = count;
+
         });
 
+        // SignalR bağlantısını başlatır.
         connection.start()
             .then(function () {
+
                 document.getElementById("connectionStatus").textContent =
                     "SignalR bağlantısı kuruldu.";
+
             })
             .catch(function (error) {
+
                 document.getElementById("connectionStatus").textContent =
                     "Bağlantı kurulamadı.";
 
                 console.error(error);
+
             });
+
+        // +1 Artır butonunu buluyoruz.
+        const increaseButton =
+            document.getElementById("increaseButton");
+
+        // Butona tıklandığında çalışır.
+        increaseButton.addEventListener("click", function () {
+
+            // VisitorHub içindeki IncreaseCounter metodunu çağırır.
+            connection.invoke("IncreaseCounter")
+                .catch(function (error) {
+
+                    console.error(error);
+
+                });
+
+        });
     </script>
 
 </body>
