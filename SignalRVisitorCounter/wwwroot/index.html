@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Visitor Counter</title>
+</head>
+<body>
+
+    <h1>Canlı Ziyaretçi Sayısı</h1>
+
+    <h2 id="visitorCount">0</h2>
+
+    <p id="connectionStatus">Bağlantı kuruluyor...</p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/visitorHub")
+            .build();
+
+        connection.on("VisitorCountChanged", function (count) {
+            document.getElementById("visitorCount").textContent = count;
+        });
+
+        connection.start()
+            .then(function () {
+                document.getElementById("connectionStatus").textContent =
+                    "SignalR bağlantısı kuruldu.";
+            })
+            .catch(function (error) {
+                document.getElementById("connectionStatus").textContent =
+                    "Bağlantı kurulamadı.";
+
+                console.error(error);
+            });
+    </script>
+
+</body>
+</html>
